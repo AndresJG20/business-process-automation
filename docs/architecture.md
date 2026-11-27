@@ -24,3 +24,5 @@ Las fechas se comparan en UTC. Los dos recordatorios se calculan respecto a la f
 ## Límites
 
 La API no tiene autenticación. Los envíos son simulados y la información se conserva localmente. No introducir datos personales o institucionales.
+
+La generación de recordatorios adquiere una reserva de escritura antes de consultar las tareas, de modo que varias ejecuciones locales no creen eventos simultáneamente a partir de un estado desactualizado. Se incluyen pruebas de concurrencia, tareas futuras y cancelación previa a la entrega.

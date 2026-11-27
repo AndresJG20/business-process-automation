@@ -10,3 +10,11 @@ def test_workflow_api(tmp_path):
         assert c.post("/runs").json()["sent"]==2
         assert c.post("/runs").json()["sent"]==0
         assert c.post("/tasks/"+str(response.json()["id"])+"/complete").status_code==200
+
+
+def test_invalid_task_requests(tmp_path):
+    with TestClient(create_app(tmp_path/"flow.db", tmp_path/"destination.db")) as c:
+        payload = {"workflow_id":999,"owner":"demo@example.test","title":"Revisar solicitud","due":"2026-01-01"}
+        assert c.post("/tasks", json=payload).status_code == 422
+        assert c.post("/tasks", json={**payload,"due":"fecha incorrecta"}).status_code == 422
+        assert c.post("/tasks/999/complete").status_code == 404

@@ -1,6 +1,5 @@
 import sqlite3
 from contextlib import contextmanager
-from pathlib import Path
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS workflows (
@@ -16,6 +15,8 @@ CREATE TABLE IF NOT EXISTS outbox (
  attempts INTEGER NOT NULL DEFAULT 0, available_at TEXT NOT NULL, error TEXT,
  UNIQUE(task_id, stage)
 );
+CREATE INDEX IF NOT EXISTS idx_outbox_pending ON outbox(state, available_at);
+CREATE INDEX IF NOT EXISTS idx_tasks_due ON tasks(completed, due);
 """
 
 @contextmanager

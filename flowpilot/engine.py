@@ -8,6 +8,8 @@ def utcnow():
 def enqueue(path, now):
     created = 0
     with transaction(path) as db:
+        # Reserva la escritura antes de consultar tareas para evitar carreras con el cierre.
+        db.execute("BEGIN IMMEDIATE")
         rows = db.execute("""SELECT t.* FROM tasks t JOIN workflows w ON w.id=t.workflow_id
                              WHERE t.completed=0 AND w.enabled=1""").fetchall()
         for row in rows:

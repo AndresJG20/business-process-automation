@@ -45,3 +45,28 @@ def test_cancel(tmp_path):
     assert repo.complete(tid)
     assert repo.events()[0]["state"]=="CANCELLED"
     assert enqueue(path,now+timedelta(days=9))==0
+
+
+def test_future_task(tmp_path):
+    path, repo, _ = setup(tmp_path)
+    now = datetime(2025, 12, 31, tzinfo=timezone.utc)
+    assert enqueue(path, now) == 0
+    assert repo.events() == []
+
+def test_concurrent_enqueue(tmp_path):
+    from concurrent.futures import ThreadPoolExecutor
+    path, repo, _ = setup(tmp_path)
+    now = datetime(2026, 1, 8, tzinfo=timezone.utc)
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        results = list(pool.map(lambda _: enqueue(path, now), range(4)))
+    assert sum(results) == 2
+    assert len(repo.events()) == 2
+
+def test_cancel_prevents_delivery(tmp_path):
+    path, repo, tid = setup(tmp_path)
+    now = datetime(2026, 1, 8, tzinfo=timezone.utc)
+    enqueue(path, now)
+    repo.complete(tid)
+    adapter = LocalNotificationAdapter(tmp_path / "notifications.db")
+    assert dispatch(path, adapter, now)["sent"] == 0
+    assert all(event["state"] == "CANCELLED" for event in repo.events())
