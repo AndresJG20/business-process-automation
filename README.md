@@ -1,11 +1,18 @@
 # FlowPilot — Business Process Automation
-Motor de seguimiento de tareas con recordatorios idempotentes y almacenamiento SQLite. Demo con datos ficticios.
+![CI](https://github.com/AndresJG20/business-process-automation/actions/workflows/ci.yml/badge.svg)
 
-## Ejecutar
-Python 3.11+ (sin dependencias externas).
+A modular automation engine with REST API, persistent tasks, scheduled worker, transactional outbox, duplicate suppression, retries, dead-letter state and cancellation. Uses fictional data and a simulated notification destination.
+
+## Start
+Python 3.12:
 ```bash
-python automation.py demo
-python automation.py run
-python -m unittest discover -v
+pip install -r requirements-dev.txt
+python -m uvicorn flowpilot.api:app
 ```
-La salida es JSON: simula notificaciones, no envía correos. Un registro único por tarea y etapa evita duplicados. El siguiente paso es integrar un proveedor de correo y un scheduler.
+Open http://localhost:8000/docs. Create a workflow, create a task with a past due date, then POST /runs and GET /events. Run python -m flowpilot.worker in another terminal to process periodically. Or use docker compose up --build.
+
+## Tests
+python -m pytest -q
+
+## Architecture
+See [design](docs/architecture.md). Modules separate API, validation, persistence, engine, adapters and worker. No external email, authentication, visual workflow editor or distributed queue yet. Do not expose this local demo to the internet.
