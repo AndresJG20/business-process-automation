@@ -15,9 +15,9 @@ def main():
         try:
             now = utcnow()
             count = enqueue(path,now)
-            logging.info("queued=%s results=%s",count,dispatch(path,adapter,now))
+            logging.info("eventos_generados=%s resultados=%s",count,dispatch(path,adapter,now))
         except Exception:
-            logging.exception("Worker cycle failed")
+            logging.exception("Error durante el ciclo de procesamiento")
         time.sleep(interval)
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@ import json
 import sqlite3
 
 class LocalNotificationAdapter:
-    """A durable simulated destination. Unique event IDs make delivery idempotent."""
+    """Destino simulado persistente; cada evento se registra una sola vez."""
     def __init__(self, path):
         self.path = path
 

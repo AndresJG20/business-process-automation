@@ -23,7 +23,7 @@ def enqueue(path, now):
     return created
 
 def dispatch(path, adapter, now, limit=100, max_attempts=3):
-    """Single local worker; database transaction serializes event claims."""
+    """Procesamiento local: la transacción serializa la entrega de eventos."""
     results = {"sent":0,"retried":0,"failed":0}
     for _ in range(limit):
         with transaction(path) as db:

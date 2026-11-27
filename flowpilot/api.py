@@ -27,7 +27,7 @@ def create_app(path=None, notification_path=None):
         try:
             return {"id":repo.create_workflow(data.name)}
         except sqlite3.IntegrityError:
-            raise HTTPException(409,"Workflow already exists")
+            raise HTTPException(409,"El flujo de trabajo ya existe")
 
     @app.get("/workflows")
     def workflows():
@@ -38,7 +38,7 @@ def create_app(path=None, notification_path=None):
         try:
             return {"id":repo.create_task(data)}
         except sqlite3.IntegrityError:
-            raise HTTPException(422,"Unknown workflow")
+            raise HTTPException(422,"Flujo de trabajo no encontrado")
 
     @app.get("/tasks")
     def tasks():
@@ -47,7 +47,7 @@ def create_app(path=None, notification_path=None):
     @app.post("/tasks/{task_id}/complete")
     def complete(task_id: int):
         if not repo.complete(task_id):
-            raise HTTPException(404,"Task not found")
+            raise HTTPException(404,"Tarea no encontrada")
         return {"completed":True}
 
     @app.post("/runs")
